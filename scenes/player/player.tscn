@@ -1,0 +1,58 @@
+[gd_scene load_steps=11 format=3 uid="uid://diwrnhtjuuo2m"]
+
+[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_twtja"]
+[ext_resource type="PackedScene" uid="uid://0u8q21drdp6d" path="res://scenes/player/skin/barbarian.tscn" id="2_g1bcv"]
+[ext_resource type="Script" path="res://scripts/player/camera/camera.gd" id="2_yynhj"]
+[ext_resource type="Script" path="res://scripts/player/state/machine.gd" id="3_ic7df"]
+[ext_resource type="Script" path="res://scripts/player/action/idle.gd" id="4_rpyn4"]
+[ext_resource type="Script" path="res://scripts/player/action/walk.gd" id="5_iofve"]
+[ext_resource type="Script" path="res://scripts/player/action/run.gd" id="6_tcka3"]
+[ext_resource type="Script" path="res://scripts/player/action/jump.gd" id="7_lt50e"]
+[ext_resource type="Script" path="res://scripts/player/action/fall.gd" id="9_4hssd"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j8w8j"]
+height = 2.5
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_twtja")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+shape = SubResource("CapsuleShape3D_j8w8j")
+
+[node name="Body" type="Node3D" parent="."]
+
+[node name="Skin" parent="Body" instance=ExtResource("2_g1bcv")]
+
+[node name="CameraArm" type="SpringArm3D" parent="."]
+transform = Transform3D(-1, 6.18173e-08, -6.18173e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0.00196671, 1, -0.494143)
+collision_mask = 0
+spring_length = 5.0
+script = ExtResource("2_yynhj")
+
+[node name="Camera" type="Camera3D" parent="CameraArm"]
+transform = Transform3D(1, -7.10543e-14, 7.10543e-14, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="StateMachine" type="Node3D" parent="." node_paths=PackedStringArray("current_state")]
+script = ExtResource("3_ic7df")
+current_state = NodePath("Idle")
+
+[node name="Idle" type="Node3D" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("4_rpyn4")
+player = NodePath("../..")
+
+[node name="Walk" type="Node3D" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("5_iofve")
+player = NodePath("../..")
+
+[node name="Run" type="Node3D" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("6_tcka3")
+player = NodePath("../..")
+
+[node name="Jump" type="Node3D" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("7_lt50e")
+player = NodePath("../..")
+
+[node name="Fall" type="Node3D" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("9_4hssd")
+player = NodePath("../..")

@@ -1,0 +1,6 @@
+.idea
+.DS*
+.git
+.vscode
+.godot
+*.tmp
