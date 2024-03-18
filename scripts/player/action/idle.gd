@@ -6,8 +6,8 @@ extends StateBase
 func enter() -> void:
 	super.enter()
 	print("[进入站立状态]")
-	player.speed = 5.0
-	player.skin.idle_action()
+	player.speed = Global.get_settings_player_walk_speed()
+	player.body_model.idle_action()
 
 func process_update(delta: float) -> void:
 	super.process_update(delta)

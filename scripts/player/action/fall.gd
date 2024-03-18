@@ -6,7 +6,7 @@ extends StateBase
 func enter() -> void:
 	super.enter()
 	print("[进入坠落状态]")
-	player.skin.fall_action()
+	player.body_model.fall_action()
 
 func process_update(delta: float) -> void:
 	super.process_update(delta)

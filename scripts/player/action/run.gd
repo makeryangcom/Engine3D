@@ -6,8 +6,8 @@ extends StateBase
 func enter() -> void:
 	super.enter()
 	print("[进入奔跑状态]")
-	player.speed = 8.0
-	player.skin.run_action()
+	player.speed = Global.get_settings_player_run_speed()
+	player.body_model.run_action()
 
 func process_update(delta: float) -> void:
 	super.process_update(delta)

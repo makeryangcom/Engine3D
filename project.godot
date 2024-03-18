@@ -17,6 +17,7 @@ config/icon="res://assets/icon.svg"
 
 [autoload]
 
+Global="*res://scripts/base/global.gd"
 Event="*res://scripts/base/event/event.gd"
 
 [input]

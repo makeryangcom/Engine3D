@@ -4,7 +4,7 @@ extends CharacterBody3D
 class_name Player
 
 @onready var body: Node3D = $Body
-@onready var skin: PlayerSkin = $Body/Skin
+@onready var body_model: PlayerModel = $Body/Model
 @onready var camera_arm: SpringArm3D = $CameraArm
 @onready var camera: Camera3D = $CameraArm/Camera
 @onready var state_machine: StateMachine = $StateMachine
@@ -13,29 +13,28 @@ class_name Player
 @export var direction: Vector3
 # 移动速度
 @export var speed: float = 5.0
+# 跳跃高度
+@export var jump_height: float = 1.5
+# 跳跃距离
+@export var jump_distance: float = 4.0
 # 跳跃速度
 @export var jump_velocity: float = 4.5
 # 跳跃峰值时间
 @export var jump_peak_time: float = 0.5
 # 跳跃坠落时间
 @export var jump_fall_time: float = 0.5
-# 跳跃高度
-@export var jump_height: float = 1.5
-# 跳跃距离
-@export var jump_distance: float = 4.0
 # 跳跃重力
 var jump_gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 # 跳跃坠落重力
 var jump_fall_gravity: float = 5.0
 
-# 计算参数
-func Calculate_Parameter() -> void:
-	jump_gravity = (2 * jump_height) / pow(jump_peak_time, 2)
-	jump_fall_gravity = (2 * jump_height)/ pow(jump_fall_time, 2)
-	jump_velocity = jump_gravity * jump_peak_time
-	speed = jump_distance / (jump_peak_time + jump_fall_time)
-
 func _ready() -> void:
+	speed = Global.get_settings_player_walk_speed()
+	jump_height = Global.get_settings_player_jump_height()
+	jump_distance = Global.get_settings_player_jump_distance()
+	jump_velocity = Global.get_settings_player_jump_velocity()
+	jump_peak_time = Global.get_settings_player_jump_peak_time()
+	jump_fall_time = Global.get_settings_player_jump_fall_time()
 	Calculate_Parameter()
 
 # 每个物理帧触发函数
@@ -73,3 +72,10 @@ func _physics_process(_delta: float) -> void:
 		body.quaternion = body.quaternion.slerp(target_quaternion, _delta * 10)
 	# 移动
 	move_and_slide()
+
+# 计算参数
+func Calculate_Parameter() -> void:
+	jump_gravity = (2 * jump_height) / pow(jump_peak_time, 2)
+	jump_fall_gravity = (2 * jump_height)/ pow(jump_fall_time, 2)
+	jump_velocity = jump_gravity * jump_peak_time
+	speed = jump_distance / (jump_peak_time + jump_fall_time)
