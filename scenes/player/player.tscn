@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://diwrnhtjuuo2m"]
+[gd_scene load_steps=13 format=3 uid="uid://diwrnhtjuuo2m"]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_twtja"]
 [ext_resource type="PackedScene" uid="uid://0u8q21drdp6d" path="res://scenes/player/model/model.tscn" id="2_bkqh5"]
 [ext_resource type="Script" path="res://scripts/player/camera/camera.gd" id="2_yynhj"]
 [ext_resource type="Script" path="res://scripts/player/state/machine.gd" id="3_ic7df"]
 [ext_resource type="Script" path="res://scripts/player/action/idle.gd" id="4_rpyn4"]
+[ext_resource type="Shader" path="res://assets/shader/forground_perspective.gdshader" id="4_vg0ir"]
 [ext_resource type="Script" path="res://scripts/player/action/walk.gd" id="5_iofve"]
 [ext_resource type="Script" path="res://scripts/player/action/run.gd" id="6_tcka3"]
 [ext_resource type="Script" path="res://scripts/player/action/jump.gd" id="7_lt50e"]
@@ -12,6 +13,13 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j8w8j"]
 height = 1.8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0e51k"]
+shader = ExtResource("4_vg0ir")
+shader_parameter/MULTIPLIER = 0.56
+shader_parameter/SCALE = 0.5
+shader_parameter/SOFTNESS = 0.45
+shader_parameter/BASE_OPACITY = 0.5
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_twtja")
@@ -32,6 +40,41 @@ script = ExtResource("2_yynhj")
 
 [node name="Camera" type="Camera3D" parent="CameraArm"]
 transform = Transform3D(1, -7.10543e-14, 7.10543e-14, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+cull_mask = 1047552
+
+[node name="backgroud_viewport_container" type="SubViewportContainer" parent="CameraArm/Camera"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="backgroud_viewport" type="SubViewport" parent="CameraArm/Camera/backgroud_viewport_container"]
+transparent_bg = true
+handle_input_locally = false
+msaa_3d = 3
+render_target_update_mode = 4
+
+[node name="backgroud_camera" type="Camera3D" parent="CameraArm/Camera/backgroud_viewport_container/backgroud_viewport"]
+cull_mask = 1047553
+
+[node name="forgroud_viewport_container" type="SubViewportContainer" parent="CameraArm/Camera"]
+material = SubResource("ShaderMaterial_0e51k")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="forgroud_viewport" type="SubViewport" parent="CameraArm/Camera/forgroud_viewport_container"]
+transparent_bg = true
+handle_input_locally = false
+msaa_3d = 3
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="forgroud_camera" type="Camera3D" parent="CameraArm/Camera/forgroud_viewport_container/forgroud_viewport"]
+cull_mask = 1047554
 
 [node name="StateMachine" type="Node3D" parent="." node_paths=PackedStringArray("current_state")]
 script = ExtResource("3_ic7df")

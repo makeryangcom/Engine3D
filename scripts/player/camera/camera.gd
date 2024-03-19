@@ -1,5 +1,13 @@
 extends SpringArm3D
 
+class_name PlayerCamera
+
+@onready var camera: Camera3D = $Camera
+@onready var backgroud_viewport: SubViewport = $Camera/backgroud_viewport_container/backgroud_viewport
+@onready var forgroud_viewport: SubViewport = $Camera/forgroud_viewport_container/forgroud_viewport
+@onready var backgroud_camera: Camera3D = $Camera/backgroud_viewport_container/backgroud_viewport/backgroud_camera
+@onready var forgroud_camera: Camera3D = $Camera/forgroud_viewport_container/forgroud_viewport/forgroud_camera
+
 ## 弹簧臂的x、y轴的旋转欧拉角
 @export var arm_x: float = 0
 @export var arm_y: float = 0
@@ -23,6 +31,8 @@ extends SpringArm3D
 @export var camera_is_need_damping: bool = true
 ## 相机视角阻尼大小
 @export var camera_need_damping: float = 10
+
+var collider = null
 
 # 鼠标右键是否按下
 var mouse_right_press: bool = false
@@ -48,11 +58,14 @@ func _input(event: InputEvent) -> void:
 		arm_x = -clamp(-arm_x, x_min_limit, x_max_limit) # 限制x
 
 func _ready() -> void:
+	update_viewport_size()
 	# 初始化弹簧臂的x、y值
 	arm_x = transform.basis.get_euler().x
 	arm_y = transform.basis.get_euler().y
 
 func _process(delta: float) -> void:
+	update_viewport_camera_position()
+	update_viewport_camera_mask()
 	update_mouse_input()
 	# 根据已有的欧拉角，来获取3D旋转的单位四元数
 	var _rotation: Quaternion = Quaternion.from_euler(Vector3(arm_x , arm_y, 0))
@@ -83,9 +96,31 @@ func update_mouse_input() -> void:
 		mouse_wheel = MOUSE_WHEEL_STATE.DOWN
 	else:
 		mouse_wheel = MOUSE_WHEEL_STATE.NONE
-	
-	
-	
-	
-	
-	
+
+func update_viewport_size() -> void:
+	backgroud_viewport.size = DisplayServer.window_get_size()
+	forgroud_viewport.size = DisplayServer.window_get_size()
+
+func update_viewport_camera_position() -> void:
+	backgroud_camera.global_transform = camera.global_transform
+	forgroud_camera.global_transform = camera.global_transform
+
+func update_viewport_camera_mask() -> void:
+	var query_parameters = PhysicsRayQueryParameters3D.new()
+	query_parameters.from = camera.global_transform.origin
+	query_parameters.to = get_parent().global_transform.origin
+	var space_state = get_world_3d().direct_space_state
+	var result = space_state.intersect_ray(query_parameters)
+	if result["collider"] != get_parent():
+		if result["collider"].has_method("set_layer_mask_value"):
+			if collider:
+				collider.set_layer_mask_value(1, true)
+				collider.set_layer_mask_value(2, false)
+			collider = result["collider"]
+			collider.set_layer_mask_value(1, false)
+			collider.set_layer_mask_value(2, true)
+	else:
+		if collider:
+			collider.set_layer_mask_value(1, true)
+			collider.set_layer_mask_value(2, false)
+			collider = null

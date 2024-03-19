@@ -15,7 +15,6 @@ class_name Enemy
 @onready var navigation: NavigationAgent3D = $Navigation
 
 func _ready() -> void:
-	# 
 	# 获取目标玩家
 	player = get_tree().current_scene.get_node("Player")
 

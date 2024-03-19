@@ -6,7 +6,6 @@ class_name Player
 @onready var body: Node3D = $Body
 @onready var body_model: PlayerModel = $Body/Model
 @onready var camera_arm: SpringArm3D = $CameraArm
-@onready var camera: Camera3D = $CameraArm/Camera
 @onready var state_machine: StateMachine = $StateMachine
 
 # 方向向量
